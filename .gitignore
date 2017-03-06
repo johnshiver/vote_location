@@ -1,2 +1,6 @@
 districts114.zip
 districtShapes/
+
+
+*.pyc
+__pycache__/

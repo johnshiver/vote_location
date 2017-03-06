@@ -20,11 +20,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# TODO: fix this
 SECRET_KEY = '2+lb1!b^w%k1&c&53n7ckur4av+(7pyhnhkc6ii@0pu$v(t7!g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# TODO: fix this
 ALLOWED_HOSTS = ['*']
 
 
@@ -40,8 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.gis',
 ]
 
+THIRD_PARTY_APPS = [
+    'rest_framework',
+]
+
+INSTALLED_APPS += THIRD_PARTY_APPS
+
 MY_APPS = [
     'districts',
+    'politicians'
 ]
 
 INSTALLED_APPS += MY_APPS
