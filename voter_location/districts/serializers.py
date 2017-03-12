@@ -14,7 +14,8 @@ class DistrictDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DistrictDetail
-        fields = ('current_population', 'registered_voters')
+        fields = ('current_population', 'registered_voters', 'politician_name',
+                  'politician_image_url')
 
     def to_representation(self, value):
         cur_serial = super(DistrictDetailSerializer, self).to_representation(value)
