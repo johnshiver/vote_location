@@ -10,7 +10,6 @@ class GetDistrictView(generics.RetrieveAPIView):
 
     serializer_class = DistrictDetailSerializer
 
-
     def get_object(self):
 
         lat = self.request.query_params.get('lat')

@@ -2,6 +2,10 @@ from django.contrib.gis.db import models
 
 
 class District(models.Model):
+    """
+    This model maps directly to shape file, note this uses
+    gis.db and not the regular django db library.
+    """
     statename = models.CharField(max_length=50)
     d_id = models.CharField(max_length=12)
     district = models.CharField(max_length=2)
