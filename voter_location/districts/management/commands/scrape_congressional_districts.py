@@ -47,6 +47,8 @@ class Command(BaseCommand):
                 if congress_rep:
                     district.politician_name = congress_rep
                 if congress_photo:
+                    if "75px" in congress_photo:
+                        congress_photo = congress_photo.replace("75px", "150px")
                     congress_rep = "_".join(congress_rep.lower().split())
                     photo_dest = "/hdd_fast/congress_rep_photos/{}.jpg".format(congress_rep)
                     with open(photo_dest, 'wb') as f:
@@ -54,13 +56,9 @@ class Command(BaseCommand):
                         if 200 <= photo_rs.status_code < 300:
                             f.write(photo_rs.content)
                             district.politician_image_url = photo_dest
-                district.save()
+                #district.save()
                 congress_rep = ""
                 congress_photo = ""
             else:
                 print("error getting url {}".format(district.wikipedia_url))
 
-#if congress_photo:
-#    with open('{}.jpg'.format(congress_rep), 'wb') as f:
-#        photo_res = requests.get("https:{}".format(congress_photo))
-#        f.write(photo_res.content)

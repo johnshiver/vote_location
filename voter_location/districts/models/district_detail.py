@@ -23,12 +23,20 @@ class DistrictDetail(models.Model):
         base_url = "https://en.wikipedia.org/wiki/{}_{}_congressional_district"
         state_name = self.district_shape.statename
         district_id = int(self.district_shape.district)
+        if district_id == 0:
+            district_id = 1
         state_name = "_".join(state_name.split())
         state_name += "'s"
-        #import ipdb;ipdb.set_trace()
         district_id = "{}{}".format(district_id,
                                     self._append_int(district_id))
         return base_url.format(state_name, district_id)
+
+    def get_politician_image_url(self):
+        if self.politician_name:
+            url = "_".join(self.politician_name.lower().split())
+            return url + ".jpg"
+        else:
+            return ""
 
     def _append_int(self, num):
         if num > 9:
@@ -36,11 +44,11 @@ class DistrictDetail(models.Model):
             if secondToLastDigit == '1':
                 return 'th'
         lastDigit = num % 10
-        if (lastDigit == 1):
+        if lastDigit == 1:
             return 'st'
-        elif (lastDigit == 2):
+        elif lastDigit == 2:
             return 'nd'
-        elif (lastDigit == 3):
+        elif lastDigit == 3:
             return 'rd'
         else:
             return 'th'
