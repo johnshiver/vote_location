@@ -4,12 +4,16 @@ from django.db import models
 class DistrictDetail(models.Model):
 
     district_shape = models.OneToOneField('districts.District')
-#    politician = models.ForeignKey('politicians.Politician')
 
+    # politician info
+    # politician = models.ForeignKey('politicians.Politician')
     # TODO: will eventually replace with its own model
     politician_name = models.CharField(max_length=100, default="")
     politician_party = models.CharField(max_length=20, default="")
     politician_image_url = models.CharField(max_length=100, default="")
+    politician_url = models.CharField(max_length=200, default="")
+
+    # district info
     state_name = models.CharField(max_length=100)
     district_full_name = models.CharField(max_length=100)
     current_population = models.IntegerField()
@@ -30,6 +34,12 @@ class DistrictDetail(models.Model):
         district_id = "{}{}".format(district_id,
                                     self._append_int(district_id))
         return base_url.format(state_name, district_id)
+
+    @property
+    def politician_ballotpedia_url(self):
+        base_url = "https://ballotpedia.org/{}"
+        fix_name = "_".join(self.politician_name.split())
+        return base_url.format(fix_name)
 
     def get_politician_image_url(self):
         if self.politician_name:

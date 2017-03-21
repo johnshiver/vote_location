@@ -21,5 +21,6 @@ class DistrictDetailSerializer(serializers.ModelSerializer):
         cur_serial = super(DistrictDetailSerializer, self).to_representation(value)
         serialized_district = DistrictSerializer(self.instance.district_shape)
         cur_serial['district_shape'] = serialized_district.data
+        cur_serial['politician_url'] = self.instance.politician_ballotpedia_url
         return cur_serial
 
