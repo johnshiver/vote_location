@@ -18,6 +18,7 @@ class DistrictDetail(models.Model):
     district_full_name = models.CharField(max_length=100)
     current_population = models.IntegerField()
     registered_voters = models.IntegerField()
+    phone_number = models.CharField(max_length=20, default="")
 
     def __str__(self):
         return self.district_shape.statename + " " + self.district_shape.district
@@ -34,6 +35,18 @@ class DistrictDetail(models.Model):
         district_id = "{}{}".format(district_id,
                                     self._append_int(district_id))
         return base_url.format(state_name, district_id)
+
+    @property
+    def district_ballotpedia_url(self):
+        base_url = "https://ballotpedia.org/{}'s_{}_Congressional_District"
+        state = "_".join(self.district_shape.statename.split())
+        district_id = int(self.district_shape.district)
+        if district_id == 0:
+            district_id = 1
+        district_id = "{}{}".format(district_id,
+                                    self._append_int(district_id))
+
+        return base_url.format(state, district_id)
 
     @property
     def politician_ballotpedia_url(self):
