@@ -50,8 +50,11 @@ def politician_in_page(url, politician_name):
         res = requests.get(url)
     except Exception as e:
         return False
+
     if not 200 <= res.status_code < 300:
         print("reqeust for {} failed".format(url))
+        return False
+
     if politician_name in str(res.content):
         return True
     else:
