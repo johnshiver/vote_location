@@ -9,8 +9,18 @@ from districts.models import DistrictDetail
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        test_run = options['test_run']
         scraper = DistrictScraper()
-        scraper.scrape()
+        scraper.scrape(update=test_run)
+
+    def add_arguments(self, parser):
+        parser.add_argument("--test_run",
+                            action='store_true',
+                            dest='test_run',
+                            default=False,
+                            help="Wont update object if True")
+
+
 
 
 class DistrictScraper(object):
@@ -19,13 +29,15 @@ class DistrictScraper(object):
         self.congress_rep = ""
         self.congress_photo = ""
 
-    def scrape(self):
+    def scrape(self, update=False):
         """
         Method that encapsulates all logic to scrape every congressional
         district in the database for congress leader name + photo
         and saves results to disk.
         """
         all_districts = DistrictDetail.objects.all()
+        lost_reps, found_reps = 0, 0
+        lost_photos, found_photos = 0, 0
         for district in all_districts:
             print("Search {}".format(district))
             res = requests.get(district.wikipedia_url)
@@ -36,13 +48,18 @@ class DistrictScraper(object):
 
                 if self.congress_rep:
                     print("Found {}".format(self.congress_rep))
+                    found_reps +=1
                 else:
                     print("Couldnt find rep")
+                    lost_reps += 1
+
 
                 if self.congress_photo:
                     print("Found {}".format(self.congress_photo))
+                    found_photos +=1
                 else:
                     print("Couldnt find photo")
+                    lost_reps += 1
 
                 if self.congress_rep:
                     district.politician_name = self.congress_rep
@@ -51,6 +68,8 @@ class DistrictScraper(object):
                     # then save location to district db entry
                     if "75px" in self.congress_photo:
                         congress_photo = self.congress_photo.replace("75px", "150px")
+                    else:
+                        congress_photo = self.congress_photo
 
                     congress_rep = "_".join(self.congress_rep.lower().split())
                     photo_dest = "/hdd_fast/congress_rep_photos/{}.jpg".format(congress_rep)
@@ -63,11 +82,16 @@ class DistrictScraper(object):
                         else:
                             print("Wasnt able to download photo! {}".format(congress_photo))
 
-                #district.save()
+                if update:
+                    district.save()
                 self.congress_rep = ""
                 self.congress_photo = ""
             else:
                 print("error getting url {}".format(district.wikipedia_url))
+        print("Found {} reps".format(found_reps))
+        print("Missing {} reps".format(lost_reps))
+        print("Found {} photos".format(found_photos))
+        print("Missing {} photos".format(lost_photos))
 
     def recursiveChildren(self, node):
         """

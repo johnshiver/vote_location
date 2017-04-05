@@ -11,7 +11,12 @@ from districts.models import DistrictDetail
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        import ipdb;ipdb.set_trace()
+        test_run = options['test_run']
+
         all_districts = DistrictDetail.objects.all()
+        missing_numbers = 0
+        found_numbers = 0
         for district in all_districts:
             politician_name = district.politician_name
             if not politician_name:
@@ -30,10 +35,22 @@ class Command(BaseCommand):
 
             if not phone_number:
                 print("Couldnt find phone number for {}".format(politician_name))
+                missing_numbers += 1
             else:
+                found_numbers += 1
                 district.phone_number = phone_number
-                district.save()
+                if not test_run:
+                    district.save()
                 print("{}: {}".format(district, phone_number))
+        print("Couldnt find {}".format(missing_numbers))
+        print("Found {}".format(found_numbers)
+
+    def add_arguments(self, parser):
+        parser.add_argument("--test_run",
+                            action='store_true',
+                            dest='test_run',
+                            default=False,
+                            help="Wont update object if True")
 
 
 def find_number_from_page(url):
