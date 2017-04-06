@@ -20,7 +20,7 @@ class Command(BaseCommand):
         parser.add_argument("--test_run",
                             action='store_true',
                             dest='test_run',
-                            default=False,
+                            default=True,
                             help="Wont update object if True")
 
 
@@ -49,7 +49,7 @@ class DistrictScraper(object):
         self._clean_up()
 
         all_districts = DistrictDetail.objects.all()
-#        all_districts = DistrictDetail.objects.filter(politician_name__contains="Gwen Moore")
+#        all_districts = DistrictDetail.objects.filter(politician_name__contains="Nydia Velázquez")
         for district in all_districts:
             self.district = district
             res = requests.get(district.wikipedia_url)
@@ -81,17 +81,17 @@ class DistrictScraper(object):
 
                     congress_rep = "_".join(self.congress_rep.lower().split())
                     photo_dest = "/hdd_fast/congress_rep_photos/{}.jpg".format(congress_rep)
-#                    if not os.path.isfile(photo_dest):
-                    with open(photo_dest, 'wb') as f:
-                        photo_rs = requests.get("https:{}".format(congress_photo))
-                        if 200 <= photo_rs.status_code < 300:
-                            self.found_photos.append(congress_photo)
-                            if update and photo_rs.content:
+                    if update and not os.path.isfile(photo_dest):
+                        with open(photo_dest, 'wb') as f:
+                            photo_rs = requests.get("https:{}".format(congress_photo))
+                            if 200 <= photo_rs.status_code < 300:
+                                self.found_photos.append(congress_photo)
+                                district.politician_image_url = photo_dest
+                                print("adding {}".format(photo_dest))
                                 f.write(photo_rs.content)
-                            district.politician_image_url = photo_dest
-                        else:
-                            district.politician_image_url = ""
-                            self.lost_photos.append(congress_photo)
+                            else:
+                                district.politician_image_url = ""
+                                self.lost_photos.append(congress_photo)
                 if update:
                     district.save()
                 self.congress_rep = ""
@@ -218,9 +218,14 @@ class DistrictScraper(object):
             y = node.find_next('a', {'class': 'image'})
             c_name = "_".join(self.congress_rep.split())
             d_name = "".join(self.congress_rep.split())
+#            import ipdb;ipdb.set_trace()
             if y and c_name.lower() in str(y.img['src']).lower():
                 self.congress_photo = y.img['src']
             elif y and d_name.lower() in str(y.img['src']).lower():
+                self.congress_photo = y.img['src']
+            elif y and self.district.politician_last_name.lower() in str(y.img['src']).lower():
+                self.congress_photo = y.img['src']
+            elif y and self.district.politician_first_name.lower() in str(y.img['src']).lower():
                 self.congress_photo = y.img['src']
             elif y and self.district.politician_manual_photo_abrv:
                 if self.district.politician_manual_photo_abrv.lower() in str(y.img['src']).lower():

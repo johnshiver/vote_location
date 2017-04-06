@@ -25,6 +25,20 @@ class DistrictDetail(models.Model):
         return self.district_shape.statename + " " + self.district_shape.district
 
     @property
+    def politician_last_name(self):
+        try:
+            return self.politician_name.split()[-1]
+        except Exception:
+            return self.politician_name
+
+    @property
+    def politician_first_name(self):
+        try:
+            return self.politician_name.split()[0]
+        except Exception:
+            return self.politician_name
+
+    @property
     def wikipedia_url(self):
         base_url = "https://en.wikipedia.org/wiki/{}_{}_congressional_district"
         state_name = self.district_shape.statename
