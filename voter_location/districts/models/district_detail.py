@@ -9,6 +9,7 @@ class DistrictDetail(models.Model):
     # politician = models.ForeignKey('politicians.Politician')
     # TODO: will eventually replace with its own model
     politician_name = models.CharField(max_length=100, default="")
+    politician_manual_photo_abrv = models.CharField(max_length=100, default="")
     politician_party = models.CharField(max_length=20, default="")
     politician_image_url = models.CharField(max_length=100, default="")
     politician_url = models.CharField(max_length=200, default="")
@@ -29,11 +30,15 @@ class DistrictDetail(models.Model):
         state_name = self.district_shape.statename
         district_id = int(self.district_shape.district)
         if district_id == 0:
-            district_id = 1
+            district_id = 'at-large'
         state_name = "_".join(state_name.split())
         state_name += "'s"
-        district_id = "{}{}".format(district_id,
-                                    self._append_int(district_id))
+        try:
+            if district_id != 'at-large':
+                district_id = "{}{}".format(district_id,
+                                            self._append_int(district_id))
+        except Exception:
+            import ipdb;ipdb.set_trace()
         return base_url.format(state_name, district_id)
 
     @property
@@ -42,9 +47,10 @@ class DistrictDetail(models.Model):
         state = "_".join(self.district_shape.statename.split())
         district_id = int(self.district_shape.district)
         if district_id == 0:
-            district_id = 1
-        district_id = "{}{}".format(district_id,
-                                    self._append_int(district_id))
+            district_id = 'At-Large'
+        if type(district_id) == int:
+            district_id = "{}{}".format(district_id,
+                                        self._append_int(district_id))
 
         return base_url.format(state, district_id)
 
