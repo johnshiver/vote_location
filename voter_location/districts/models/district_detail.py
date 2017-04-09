@@ -1,4 +1,9 @@
+import re
+
 from django.db import models
+
+
+phonePattern = re.compile(r'^\D*(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$')
 
 
 class DistrictDetail(models.Model):
@@ -23,6 +28,12 @@ class DistrictDetail(models.Model):
 
     def __str__(self):
         return self.district_shape.statename + " " + self.district_shape.district
+
+    @property
+    def fixed_phone_number(self):
+        nums = phonePattern.search(self.phone_number).groups()
+        nums = list(filter(lambda x: x, nums))
+        return "-".join(nums)
 
     @property
     def politician_last_name(self):
