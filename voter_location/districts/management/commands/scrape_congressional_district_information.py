@@ -86,7 +86,7 @@ class DistrictScraper(object):
                             photo_rs = requests.get("https:{}".format(congress_photo))
                             if 200 <= photo_rs.status_code < 300:
                                 self.found_photos.append(congress_photo)
-                                district.politician_image_url = photo_dest
+                                district.politician_image_url = "congress-reps/hakeem_jeffries.jpg"
                                 print("adding {}".format(photo_dest))
                                 f.write(photo_rs.content)
                             else:
@@ -219,6 +219,12 @@ class DistrictScraper(object):
             c_name = "_".join(self.congress_rep.split())
             d_name = "".join(self.congress_rep.split())
 #            import ipdb;ipdb.set_trace()
+
+            # all the various conditions that will find correct photo
+            # while scraping a page
+            # TODO: not clear whether this will work on first run...
+            # i added additional conditions as i went along, never
+            # did a fresh run
             if y and c_name.lower() in str(y.img['src']).lower():
                 self.congress_photo = y.img['src']
             elif y and d_name.lower() in str(y.img['src']).lower():
@@ -231,11 +237,7 @@ class DistrictScraper(object):
                 if self.district.politician_manual_photo_abrv.lower() in str(y.img['src']).lower():
                     self.congress_photo = y.img['src']
 
-        # TODO: add more conditions to find photo
-        # Figure out how many are misssing
-
-        # no idea what this condition means
-        # basically just recurses on all children
+        # if node has childGenerator go ahead and recurse down it
         if "childGenerator" in dir(node):
             for child in node.childGenerator():
                 self.recursiveChildren(child)

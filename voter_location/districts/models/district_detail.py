@@ -31,9 +31,16 @@ class DistrictDetail(models.Model):
 
     @property
     def fixed_phone_number(self):
-        nums = phonePattern.search(self.phone_number).groups()
-        nums = list(filter(lambda x: x, nums))
-        return "-".join(nums)
+        if self.phone_number:
+            nums = phonePattern.search(self.phone_number)
+            if nums:
+                nums = nums.groups()
+            else:
+                return ""
+            nums = list(filter(lambda x: x, nums))
+            return "-".join(nums)
+        else:
+            return ""
 
     @property
     def politician_last_name(self):
